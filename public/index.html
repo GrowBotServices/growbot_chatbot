@@ -7,10 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #0f766e;
-            --primary-dark: #0d5d56;
-            --primary-light: #14b8a6;
+            --primary: #f7931e;
+            --primary-dark: #e07d0a;
+            --primary-light: #ffab4a;
             --secondary: #1e3a5f;
+            --secondary-light: #2a4a73;
             --bg-light: #f8fafc;
             --bg-white: #ffffff;
             --text-dark: #1e293b;
@@ -50,24 +51,35 @@
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--primary);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
+            height: 45px;
+            width: auto;
         }
 
         .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-title {
             font-size: 1.5rem;
             font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-title span:first-child {
+            color: #ffffff;
+        }
+
+        .logo-title span:last-child {
+            color: var(--primary);
         }
 
         .header-tagline {
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             opacity: 0.8;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
         }
 
         /* Main Layout */
@@ -126,7 +138,7 @@
         .feature-icon {
             width: 24px;
             height: 24px;
-            background: var(--primary-light);
+            background: var(--primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -138,7 +150,7 @@
 
         .feature-text strong {
             display: block;
-            color: var(--text-dark);
+            color: var(--secondary);
             margin-bottom: 0.25rem;
         }
 
@@ -192,7 +204,7 @@
         }
 
         .chat-header {
-            background: var(--primary);
+            background: var(--secondary);
             color: white;
             padding: 1rem 1.25rem;
             display: flex;
@@ -203,7 +215,7 @@
         .chat-avatar {
             width: 40px;
             height: 40px;
-            background: rgba(255,255,255,0.2);
+            background: var(--primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -271,7 +283,7 @@
         }
 
         .message.assistant .message-avatar {
-            background: var(--primary-light);
+            background: var(--primary);
             color: white;
         }
 
@@ -293,7 +305,7 @@
         }
 
         .message.user .message-content {
-            background: var(--primary);
+            background: var(--secondary);
             color: white;
             border-bottom-right-radius: 4px;
         }
@@ -401,10 +413,31 @@
 <body>
     <header class="header">
         <div class="logo">
-            <div class="logo-icon">🤖</div>
-            <div>
-                <div class="logo-text">GrowBot</div>
-                <div class="header-tagline">Intelligent Growth Systems for Tools & Trades</div>
+            <svg class="logo-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Robot Head -->
+                <rect x="25" y="25" width="50" height="45" rx="8" fill="#1e3a5f"/>
+                <!-- Eyes -->
+                <circle cx="40" cy="45" r="6" fill="white"/>
+                <circle cx="60" cy="45" r="6" fill="white"/>
+                <circle cx="40" cy="45" r="3" fill="#1e3a5f"/>
+                <circle cx="60" cy="45" r="3" fill="#1e3a5f"/>
+                <!-- Smile -->
+                <path d="M38 58 Q50 65 62 58" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+                <!-- Antenna -->
+                <rect x="47" y="15" width="6" height="12" fill="#1e3a5f"/>
+                <circle cx="50" cy="12" r="5" fill="#f7931e"/>
+                <!-- Wrench (left) -->
+                <path d="M15 35 L25 45 M15 45 L25 35" stroke="#1e3a5f" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="12" cy="32" r="6" fill="none" stroke="#1e3a5f" stroke-width="3"/>
+                <!-- Screwdriver (right) -->
+                <rect x="78" y="30" width="4" height="25" fill="#f7931e" rx="1"/>
+                <rect x="76" y="28" width="8" height="6" fill="#1e3a5f" rx="1"/>
+            </svg>
+            <div class="logo-text">
+                <div class="logo-title">
+                    <span>Grow</span><span>Bot</span>
+                </div>
+                <div class="header-tagline">Intelligent Growth Systems for Service Businesses</div>
             </div>
         </div>
     </header>
@@ -458,7 +491,7 @@
 
         <section class="chat-container">
             <div class="chat-header">
-                <div class="chat-avatar">👩</div>
+                <div class="chat-avatar">🤖</div>
                 <div class="chat-title">
                     <h2>Sophie</h2>
                     <span>GrowBot AI Assistant</span>
@@ -468,7 +501,7 @@
 
             <div class="chat-messages" id="chatMessages">
                 <div class="message assistant">
-                    <div class="message-avatar">👩</div>
+                    <div class="message-avatar">🤖</div>
                     <div class="message-content">
                         Hi there! I'm Sophie from GrowBot. 👋<br><br>
                         I can tell you all about how GrowBot helps trades businesses grow, or I can show you exactly how our AI chatbot works by demonstrating it live.<br><br>
@@ -584,7 +617,7 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${role}`;
             
-            const avatar = role === 'assistant' ? '👩' : '👤';
+            const avatar = role === 'assistant' ? '🤖' : '👤';
             
             // Convert newlines to <br> tags
             const formattedContent = content.replace(/\n/g, '<br>');
@@ -604,7 +637,7 @@
             typingDiv.id = id;
             typingDiv.className = 'message assistant';
             typingDiv.innerHTML = `
-                <div class="message-avatar">👩</div>
+                <div class="message-avatar">🤖</div>
                 <div class="typing-indicator">
                     <span></span>
                     <span></span>
