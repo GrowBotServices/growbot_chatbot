@@ -13,10 +13,10 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+            background: linear-gradient(135deg, #f7931e 0%, #e07d0a 100%);
             border: none;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.4);
+            box-shadow: 0 4px 12px rgba(247, 147, 30, 0.4);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -26,7 +26,7 @@
 
         #growbot-widget-button:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(15, 118, 110, 0.5);
+            box-shadow: 0 6px 20px rgba(247, 147, 30, 0.5);
         }
 
         #growbot-widget-button svg {
@@ -82,7 +82,7 @@
 
         /* Widget Header */
         .growbot-header {
-            background: linear-gradient(135deg, #0f766e 0%, #0d5d56 100%);
+            background: linear-gradient(135deg, #1e3a5f 0%, #152a45 100%);
             color: white;
             padding: 16px 20px;
             display: flex;
@@ -93,7 +93,7 @@
         .growbot-avatar {
             width: 44px;
             height: 44px;
-            background: rgba(255,255,255,0.2);
+            background: #f7931e;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -171,7 +171,7 @@
         }
 
         .growbot-message.assistant .growbot-message-avatar {
-            background: #14b8a6;
+            background: #f7931e;
             color: white;
         }
 
@@ -194,7 +194,7 @@
         }
 
         .growbot-message.user .growbot-message-content {
-            background: #0f766e;
+            background: #1e3a5f;
             color: white;
             border-bottom-right-radius: 4px;
         }
@@ -248,7 +248,7 @@
         }
 
         .growbot-input:focus {
-            border-color: #0f766e;
+            border-color: #f7931e;
         }
 
         .growbot-input::placeholder {
@@ -258,7 +258,7 @@
         .growbot-send {
             width: 40px;
             height: 40px;
-            background: #0f766e;
+            background: #f7931e;
             color: white;
             border: none;
             border-radius: 8px;
@@ -270,7 +270,7 @@
         }
 
         .growbot-send:hover {
-            background: #0d5d56;
+            background: #e07d0a;
         }
 
         .growbot-send:disabled {
@@ -294,7 +294,7 @@
         }
 
         .growbot-footer a {
-            color: #0f766e;
+            color: #f7931e;
             text-decoration: none;
         }
 
@@ -318,9 +318,9 @@
         }
 
         .growbot-prompt:hover {
-            background: #0f766e;
+            background: #f7931e;
             color: white;
-            border-color: #0f766e;
+            border-color: #f7931e;
         }
 
         /* Mobile Responsive */
@@ -363,7 +363,7 @@
     <!-- Chat Widget -->
     <div id="growbot-widget">
         <div class="growbot-header">
-            <div class="growbot-avatar">👩</div>
+            <div class="growbot-avatar">🤖</div>
             <div class="growbot-title">
                 <h3>Sophie</h3>
                 <span>GrowBot AI Assistant</span>
@@ -376,7 +376,7 @@
 
         <div class="growbot-messages" id="growbotMessages">
             <div class="growbot-message assistant">
-                <div class="growbot-message-avatar">👩</div>
+                <div class="growbot-message-avatar">🤖</div>
                 <div class="growbot-message-content">
                     Hi! I'm Sophie from GrowBot. 👋<br><br>
                     I can tell you about GrowBot, or show you how our AI chatbot works for trades businesses. What would you like to know?
@@ -411,7 +411,7 @@
 
     <script>
         // Configuration - UPDATE THIS URL to your Render deployment
-        const GROWBOT_API_URL = 'https://your-growbot-app.onrender.com';
+        const GROWBOT_API_URL = 'https://growbot-chatbot.onrender.com';
         
         const widget = document.getElementById('growbot-widget');
         const button = document.getElementById('growbot-widget-button');
@@ -498,7 +498,7 @@
         function addMessage(content, role) {
             const div = document.createElement('div');
             div.className = `growbot-message ${role}`;
-            const avatar = role === 'assistant' ? '👩' : '👤';
+            const avatar = role === 'assistant' ? '🤖' : '👤';
             const formatted = content.replace(/\n/g, '<br>');
             
             div.innerHTML = `
@@ -516,7 +516,7 @@
             div.id = id;
             div.className = 'growbot-message assistant';
             div.innerHTML = `
-                <div class="growbot-message-avatar">👩</div>
+                <div class="growbot-message-avatar">🤖</div>
                 <div class="growbot-typing">
                     <span></span><span></span><span></span>
                 </div>
