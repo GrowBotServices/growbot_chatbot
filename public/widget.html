@@ -1,1 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrowBot Chat Widget</title>
+    <style>
+        /* Widget Button */
+        #growbot-widget-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            z-index: 9998;
+        }
 
+        #growbot-widget-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(15, 118, 110, 0.5);
+        }
+
+        #growbot-widget-button svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+
+        #growbot-widget-button .close-icon {
+            display: none;
+        }
+
+        #growbot-widget-button.open .chat-icon {
+            display: none;
+        }
+
+        #growbot-widget-button.open .close-icon {
+            display: block;
+        }
+
+        /* Widget Container */
+        #growbot-widget {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 380px;
+            height: 550px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 9999;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        #growbot-widget.open {
+            display: flex;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Widget Header */
+        .growbot-header {
+            background: linear-gradient(135deg, #0f766e 0%, #0d5d56 100%);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .growbot-avatar {
+            width: 44px;
+            height: 44px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .growbot-title {
+            flex: 1;
+        }
+
+        .growbot-title h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .growbot-title span {
+            font-size: 0.75rem;
+            opacity: 0.85;
+        }
+
+        .growbot-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .growbot-status-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Messages Container */
+        .growbot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #f8fafc;
+        }
+
+        .growbot-message {
+            display: flex;
+            gap: 10px;
+            max-width: 85%;
+        }
+
+        .growbot-message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .growbot-message-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        .growbot-message.assistant .growbot-message-avatar {
+            background: #14b8a6;
+            color: white;
+        }
+
+        .growbot-message.user .growbot-message-avatar {
+            background: #1e3a5f;
+            color: white;
+        }
+
+        .growbot-message-content {
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .growbot-message.assistant .growbot-message-content {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-bottom-left-radius: 4px;
+        }
+
+        .growbot-message.user .growbot-message-content {
+            background: #0f766e;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        /* Typing Indicator */
+        .growbot-typing {
+            display: flex;
+            gap: 4px;
+            padding: 10px 14px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            width: fit-content;
+        }
+
+        .growbot-typing span {
+            width: 6px;
+            height: 6px;
+            background: #94a3b8;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite;
+        }
+
+        .growbot-typing span:nth-child(2) { animation-delay: 0.2s; }
+        .growbot-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingBounce {
+            0%, 100% { transform: translateY(0); opacity: 0.5; }
+            50% { transform: translateY(-4px); opacity: 1; }
+        }
+
+        /* Input Area */
+        .growbot-input-container {
+            padding: 12px 16px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+            background: white;
+        }
+
+        .growbot-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .growbot-input:focus {
+            border-color: #0f766e;
+        }
+
+        .growbot-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .growbot-send {
+            width: 40px;
+            height: 40px;
+            background: #0f766e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .growbot-send:hover {
+            background: #0d5d56;
+        }
+
+        .growbot-send:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .growbot-send svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Powered By */
+        .growbot-footer {
+            padding: 8px;
+            text-align: center;
+            font-size: 0.7rem;
+            color: #94a3b8;
+            background: white;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .growbot-footer a {
+            color: #0f766e;
+            text-decoration: none;
+        }
+
+        /* Quick Prompts */
+        .growbot-prompts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 0 16px 12px;
+            background: #f8fafc;
+        }
+
+        .growbot-prompt {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .growbot-prompt:hover {
+            background: #0f766e;
+            color: white;
+            border-color: #0f766e;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 420px) {
+            #growbot-widget {
+                width: calc(100% - 20px);
+                right: 10px;
+                bottom: 80px;
+                height: 70vh;
+                max-height: 550px;
+            }
+        }
+
+        /* Scrollbar */
+        .growbot-messages::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .growbot-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .growbot-messages::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Chat Widget Button -->
+    <button id="growbot-widget-button" onclick="toggleWidget()">
+        <svg class="chat-icon" viewBox="0 0 24 24">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+        </svg>
+        <svg class="close-icon" viewBox="0 0 24 24">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+    </button>
+
+    <!-- Chat Widget -->
+    <div id="growbot-widget">
+        <div class="growbot-header">
+            <div class="growbot-avatar">👩</div>
+            <div class="growbot-title">
+                <h3>Sophie</h3>
+                <span>GrowBot AI Assistant</span>
+            </div>
+            <div class="growbot-status">
+                <div class="growbot-status-dot"></div>
+                Online
+            </div>
+        </div>
+
+        <div class="growbot-messages" id="growbotMessages">
+            <div class="growbot-message assistant">
+                <div class="growbot-message-avatar">👩</div>
+                <div class="growbot-message-content">
+                    Hi! I'm Sophie from GrowBot. 👋<br><br>
+                    I can tell you about GrowBot, or show you how our AI chatbot works for trades businesses. What would you like to know?
+                </div>
+            </div>
+        </div>
+
+        <div class="growbot-prompts" id="growbotPrompts">
+            <span class="growbot-prompt" onclick="sendPrompt('How much does GrowBot cost?')">Pricing</span>
+            <span class="growbot-prompt" onclick="sendPrompt('Show me how the chatbot works')">See Demo</span>
+            <span class="growbot-prompt" onclick="sendPrompt('What makes GrowBot different?')">Why GrowBot?</span>
+        </div>
+
+        <div class="growbot-input-container">
+            <textarea 
+                class="growbot-input" 
+                id="growbotInput" 
+                placeholder="Type a message..."
+                rows="1"
+            ></textarea>
+            <button class="growbot-send" id="growbotSend" onclick="sendMessage()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="growbot-footer">
+            Powered by <a href="https://growbot.services" target="_blank">GrowBot</a>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - UPDATE THIS URL to your Render deployment
+        const GROWBOT_API_URL = 'https://your-growbot-app.onrender.com';
+        
+        const widget = document.getElementById('growbot-widget');
+        const button = document.getElementById('growbot-widget-button');
+        const messages = document.getElementById('growbotMessages');
+        const input = document.getElementById('growbotInput');
+        const sendBtn = document.getElementById('growbotSend');
+        const prompts = document.getElementById('growbotPrompts');
+
+        const sessionId = 'growbot_' + Math.random().toString(36).substr(2, 9);
+        let isFirstMessage = true;
+
+        function toggleWidget() {
+            widget.classList.toggle('open');
+            button.classList.toggle('open');
+            if (widget.classList.contains('open')) {
+                input.focus();
+            }
+        }
+
+        // Auto-resize textarea
+        input.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+        });
+
+        // Send on Enter
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function sendPrompt(text) {
+            input.value = text;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Hide quick prompts after first message
+            if (isFirstMessage) {
+                prompts.style.display = 'none';
+                isFirstMessage = false;
+            }
+
+            input.value = '';
+            input.style.height = 'auto';
+
+            addMessage(message, 'user');
+            const typingId = showTyping();
+
+            input.disabled = true;
+            sendBtn.disabled = true;
+
+            try {
+                const response = await fetch(`${GROWBOT_API_URL}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message, sessionId }),
+                });
+
+                const data = await response.json();
+                removeTyping(typingId);
+
+                if (data.error) {
+                    addMessage('Sorry, something went wrong. Please try again.', 'assistant');
+                } else {
+                    addMessage(data.response, 'assistant');
+                }
+            } catch (error) {
+                console.error('GrowBot Error:', error);
+                removeTyping(typingId);
+                addMessage('Sorry, I couldn\'t connect. Please try again.', 'assistant');
+            }
+
+            input.disabled = false;
+            sendBtn.disabled = false;
+            input.focus();
+        }
+
+        function addMessage(content, role) {
+            const div = document.createElement('div');
+            div.className = `growbot-message ${role}`;
+            const avatar = role === 'assistant' ? '👩' : '👤';
+            const formatted = content.replace(/\n/g, '<br>');
+            
+            div.innerHTML = `
+                <div class="growbot-message-avatar">${avatar}</div>
+                <div class="growbot-message-content">${formatted}</div>
+            `;
+            
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function showTyping() {
+            const id = 'typing_' + Date.now();
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = 'growbot-message assistant';
+            div.innerHTML = `
+                <div class="growbot-message-avatar">👩</div>
+                <div class="growbot-typing">
+                    <span></span><span></span><span></span>
+                </div>
+            `;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+            return id;
+        }
+
+        function removeTyping(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+    </script>
+</body>
+</html>
